@@ -1,8 +1,16 @@
-const express = require("express");
-const { createServer } = require("http");
-const { Server } = require("socket.io");
+import express from "express";
+import bodyParser from 'body-parser';
+import { createServer } from "http";
+import { Server } from "socket.io";
+import { getCustomers, createCustomers } from "./database.mjs";
 
 const app = express();
+
+app.use(bodyParser.json());
+
+app.get('/customers', getCustomers);
+app.post('/customers', createCustomers);
+
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
