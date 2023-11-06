@@ -2,7 +2,7 @@ import express from "express";
 import bodyParser from 'body-parser';
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { getCustomers, createCustomers } from "./database.mjs";
+import { getCustomers, createCustomers } from "./database.js";
 
 const app = express();
 
