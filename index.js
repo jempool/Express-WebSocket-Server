@@ -1,25 +1,24 @@
 import express from "express";
-import bodyParser from 'body-parser';
+import bodyParser from "body-parser";
 import { createServer } from "http";
 import { Server } from "socket.io";
-// import passport from 'passport';
-import cors from 'cors';
-import jwt from 'jsonwebtoken';
+import cors from "cors";
+import jwt from "jsonwebtoken";
+import * as dotenv from "dotenv";
+dotenv.config();
 
-import "./passport.js";
-import auth from './routes/public/auth.js';
-// import chat from './routes/private/chat.js';
+import "./src/services/auth.service.js";
+import authRouter from "./src/routes/auth.route.js";
 
 // =================================================================================
 // API Server  =====================================================================
 // =================================================================================
 
 const app = express();
-app.use(cors())
+app.use(cors());
 app.use(bodyParser.json());
 
-app.use('/auth', auth);
-// app.use('/chat', passport.authenticate('jwt', { session: false }), chat);
+app.use("/auth", authRouter);
 
 
 // =================================================================================
@@ -36,28 +35,28 @@ const io = new Server(httpServer, {
 
 io.use(function (socket, next) {
   if (socket.handshake.query && socket.handshake.query.token) {
-    jwt.verify(socket.handshake.query.token, 'your_jwt_secret', function (err, decoded) {
-      if (err) return next(new Error('Authentication error'));
+    jwt.verify(socket.handshake.query.token, process.env.JWT_SECRET, function (err, decoded) {
+      if (err) return next(new Error("Authentication error"));
       socket.decoded = decoded;
       next();
     });
   }
   else {
-    next(new Error('Authentication error'));
+    next(new Error("Authentication error"));
   }
 })
   .on("connection", (socket) => {
-    console.log(`${new Date()} - New connection ${socket.id}`)
+    console.log(`${new Date()} - New connection ${socket.id}`);
 
     // Listening for chat event
-    socket.on('chat', function (data) {
-      io.sockets.emit('chat', data);
+    socket.on("chat", function (data) {
+      io.sockets.emit("chat", data);
     });
 
     // Listening for typing event
-    socket.on('typing', function (data) {
-      io.sockets.emit('typing', data);
-      socket.broadcast.emit('typing', data);
+    socket.on("typing", function (data) {
+      io.sockets.emit("typing", data);
+      socket.broadcast.emit("typing", data);
     });
   });
 
