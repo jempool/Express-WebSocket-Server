@@ -1,15 +1,14 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient } from "mongodb";
+import { DATABASE_URL, DATABASE_NAME } from "./lib/constants.js";
 
-const url = 'mongodb://localhost:27017';
-const dbName = 'mydb';
 
-const client = new MongoClient(url);
-const db = client.db(dbName);
+const client = new MongoClient(DATABASE_URL);
+const db = client.db(DATABASE_NAME);
 
 export async function getUserByEmail(email) {
-    return await db.collection("users").findOne({ email });
+  return await db.collection("users").findOne({ email });
 }
 
 export async function createUser(user) {
-    return await db.collection("users").insertOne(user);
+  return await db.collection("users").insertOne(user);
 }

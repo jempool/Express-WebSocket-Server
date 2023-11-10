@@ -1,7 +1,7 @@
 {
-  "name": "websockets-playlist",
+  "name": "express-websockets-server",
   "version": "1.0.0",
-  "description": "A chat app using WebSockets",
+  "description": "Express WebSockets Server",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -11,16 +11,12 @@
     "type": "git",
     "url": ""
   },
-  "author": "Technosaviour",
-  "license": "ISC",
-  "bugs": {
-    "url": ""
-  },
   "homepage": "",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.2.0",
@@ -30,6 +26,9 @@
     "socket.io": "^4.7.2"
   },
   "devDependencies": {
+    "eslint": "^8.53.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.29.0",
     "nodemon": "^3.0.1"
   }
 }
