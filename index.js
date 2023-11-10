@@ -7,8 +7,8 @@ import jwt from "jsonwebtoken";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import "./passport.js";
-import auth from "./routes/public/auth.js";
+import "./src/services/auth.service.js";
+import authRouter from "./src/routes/auth.route.js";
 
 // =================================================================================
 // API Server  =====================================================================
@@ -18,7 +18,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.use("/auth", auth);
+app.use("/auth", authRouter);
 
 
 // =================================================================================

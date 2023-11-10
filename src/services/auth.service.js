@@ -9,7 +9,7 @@ const saltRounds = 10;
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import { getUserByEmail, createUser } from "./database.js";
+import { getUserByEmail, createUser } from "./db.service.js";
 
 
 passport.use(new LocalStrategy({
@@ -34,15 +34,7 @@ passport.use(new JWTStrategy({
 },
   function (jwtPayload, done) {
     // to-do: implement refresh token
-    // //find the user in db if needed. This functionality may be omitted if you store everything you"ll need in JWT payload.
-    // return UserModel.findOneById(jwtPayload.id)
-    //     .then(user => {
-    //         return done(null, user);
-    //     })
-    //     .catch(err => {
-    //         return done(err);
-    //     });
-    const user = { username: "pending-implementation" };
+    const user = {};
     return done(null, user);
   }
 ));

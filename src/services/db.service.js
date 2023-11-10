@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { DATABASE_URL, DATABASE_NAME } from "./lib/constants.js";
+import { DATABASE_URL, DATABASE_NAME } from "../utils/constants.js";
 
 
 const client = new MongoClient(DATABASE_URL);

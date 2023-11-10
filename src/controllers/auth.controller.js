@@ -1,11 +1,9 @@
-import express from "express";
-const router = express.Router();
 import jwt from "jsonwebtoken";
 import passport from "passport";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-router.post("/login", function (req, res) {
+export function login(req, res) {
   passport.authenticate("local", { session: false }, (err, user, info) => {
     if (err || !user) {
       return res.status(400).json({
@@ -21,9 +19,9 @@ router.post("/login", function (req, res) {
       return res.json({ user, token });
     });
   })(req, res);
-});
+}
 
-router.post("/signup", function (req, res) {
+export function signup(req, res) {
   passport.authenticate("local-signup", { session: false }, (err, user, info) => {
     if (err || !user) {
       return res.status(400).json({
@@ -39,6 +37,6 @@ router.post("/signup", function (req, res) {
     });
   }
   )(req, res);
-});
+}
 
-export default router;
+
