@@ -4,9 +4,11 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import * as dotenv from "dotenv";
 dotenv.config();
 
+import { PORT, DATABASE_URL, DATABASE_NAME } from "./src/utils/constants.js";
 import "./src/services/auth.service.js";
 import authRouter from "./src/routes/auth.route.js";
 
@@ -44,20 +46,31 @@ io.use(function (socket, next) {
   else {
     next(new Error("Authentication error"));
   }
-})
-  .on("connection", (socket) => {
-    console.log(`${new Date()} - New connection ${socket.id}`);
+}).on("connection", (socket) => {
+  console.log(`${new Date()} - New connection ${socket.id}`);
 
-    // Listening for chat event
-    socket.on("chat", function (data) {
-      io.sockets.emit("chat", data);
-    });
-
-    // Listening for typing event
-    socket.on("typing", function (data) {
-      io.sockets.emit("typing", data);
-      socket.broadcast.emit("typing", data);
-    });
+  // Listening for chat event
+  socket.on("chat", function (data) {
+    io.sockets.emit("chat", data);
   });
 
-httpServer.listen(3000);
+  // Listening for typing event
+  socket.on("typing", function (data) {
+    io.sockets.emit("typing", data);
+    socket.broadcast.emit("typing", data);
+  });
+});
+
+
+const start = async () => {
+  try {
+    await mongoose.connect(`${DATABASE_URL}/${DATABASE_NAME}`);
+    httpServer.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+  }
+  catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
+};
+
+start();

@@ -3,6 +3,9 @@ import passport from "passport";
 import * as dotenv from "dotenv";
 dotenv.config();
 
+import { ACCESS_TOKEN_EXPIRES_IN, REFRESH_TOKEN_EXPIRES_IN } from "../utils/constants.js";
+
+
 export function login(req, res) {
   passport.authenticate("local", { session: false }, (err, user, info) => {
     if (err || !user) {
@@ -13,10 +16,11 @@ export function login(req, res) {
     }
     req.login(user, { session: false }, (err) => {
       if (err) {
-        res.send(err);
+        res.status(400).send(err);
       }
-      const token = jwt.sign({ email: user }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
-      return res.json({ user, token });
+      const accessToken = jwt.sign({ user }, process.env.JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRES_IN });
+      const refreshToken = jwt.sign({ user }, process.env.JWT_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRES_IN });
+      return res.status(200).json({ user, accessToken, refreshToken });
     });
   })(req, res);
 }
@@ -30,13 +34,33 @@ export function signup(req, res) {
     }
     req.login(user, { session: false }, (err) => {
       if (err) {
-        res.send(err);
+        res.status(400).send(err);
       }
-      const token = jwt.sign({ email: user }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
-      return res.json({ user, token });
+      const accessToken = jwt.sign({ user }, process.env.JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRES_IN });
+      const refreshToken = jwt.sign({ user }, process.env.JWT_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRES_IN });
+      return res.status(200).json({ user, accessToken, refreshToken });
     });
   }
   )(req, res);
 }
 
+export function verifyRefresh(req, res) {
+  try {
+    const { email, refreshToken } = req.body;
+    const token = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    // --
+    const isValid = token.user.email === email;
+    if (!isValid) {
+      return res.status(401).json({ success: false, error: "Invalid token, try login again" });
+    }
+    const user = { name: token.user.name, email: token.user.email };
+    const accessToken = jwt.sign({ user }, process.env.JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRES_IN });
+    return res.status(200).json({ user, accessToken });
+    // --
+
+  }
+  catch (error) {
+    return false;
+  }
+}
 
