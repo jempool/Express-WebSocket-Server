@@ -1,9 +1,9 @@
 import passport from "passport";
 import * as passportLocal from "passport-local";
 const LocalStrategy = passportLocal.Strategy;
-import passportJWT from "passport-jwt";
-const JWTStrategy = passportJWT.Strategy;
-const ExtractJWT = passportJWT.ExtractJwt;
+import * as passportJwt from "passport-jwt";
+const JwtStrategy = passportJwt.Strategy;
+const ExtractJwt = passportJwt.ExtractJwt;
 import bcrypt from "bcrypt";
 const saltRounds = 10;
 import * as dotenv from "dotenv";
@@ -18,44 +18,54 @@ passport.use(new LocalStrategy({
 },
   function (email, password, done) {
     getUserByEmail(email)
-      .then(user => {
+      .then((user) => {
         if (!user || !bcrypt.compareSync(password, user.password)) {
           return done(null, false, "Incorrect email or password.");
         }
-        return done(null, { email }, "User created Successfully");
+        return done(null, user.toResponseObject(), "User created Successfully");
       })
-      .catch(err => done(err));
-  }
-));
-
-passport.use(new JWTStrategy({
-  jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-  secretOrKey: process.env.JWT_SECRET
-},
-  function (jwtPayload, done) {
-    // to-do: implement refresh token
-    const user = {};
-    return done(null, user);
+      .catch((err) => {
+        console.error(err);
+        done(err);
+      });
   }
 ));
 
 passport.use("local-signup", new LocalStrategy({
   usernameField: "email",
-  passwordField: "password"
+  passwordField: "password",
+  passReqToCallback: true
 },
-  function (email, password, done) {
+  function (req, email, password, done) {
     getUserByEmail(email)
-      .then(user => {
+      .then((user) => {
         if (user) {
           return done(null, false, `The email ${email} is already associated with an account`);
         }
         const salt = bcrypt.genSaltSync(saltRounds);
         const hash = bcrypt.hashSync(password, salt);
-        createUser({ email, password: hash })
-          .then(() => {
-            return done(null, { email }, "User created Successfully");
+        createUser({ name: req.body.name, email, password: hash })
+          .then((user) => {
+            return done(null, user.toResponseObject(), "User created Successfully");
           });
       })
-      .catch(err => done(err));
+      .catch((err) => {
+        console.error(err);
+        done(err);
+      });
   }
 ));
+
+passport.use(new JwtStrategy({
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: process.env.JWT_SECRET
+}, function (jwt_payload, done) {
+  getUserByEmail(jwt_payload.user.email)
+    .then((user) => {
+      return done(null, user.toResponseObject(), "User created Successfully");
+    })
+    .catch((err) => {
+      console.error(err);
+      done(err);
+    });
+}));

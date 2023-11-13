@@ -1,17 +1,21 @@
 import express from "express";
 import bodyParser from "body-parser";
 import { createServer } from "http";
-import { Server } from "socket.io";
+import passport from "passport";
 import cors from "cors";
-import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import * as dotenv from "dotenv";
 dotenv.config();
 
+import * as WebSockets from "./src/webSockets/webSockets.js";
+import { PORT, DATABASE_URL, DATABASE_NAME } from "./src/utils/constants.js";
 import "./src/services/auth.service.js";
 import authRouter from "./src/routes/auth.route.js";
+import chatRouter from "./src/routes/chat.route.js";
+
 
 // =================================================================================
-// API Server  =====================================================================
+// API  ============================================================================
 // =================================================================================
 
 const app = express();
@@ -19,45 +23,27 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use("/auth", authRouter);
+app.use("/chat", passport.authenticate("jwt", { session: false }), chatRouter);
 
 
 // =================================================================================
-// WebSockets  =====================================================================
+// Server  =========================================================================
 // =================================================================================
 
 const httpServer = createServer(app);
-const io = new Server(httpServer, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
+
+// === WebSockets ===
+WebSockets.socketIO(httpServer);
+
+const start = async () => {
+  try {
+    await mongoose.connect(`${DATABASE_URL}/${DATABASE_NAME}`);
+    httpServer.listen(PORT, () => console.log(`Server started on port ${PORT}`));
   }
-});
-
-io.use(function (socket, next) {
-  if (socket.handshake.query && socket.handshake.query.token) {
-    jwt.verify(socket.handshake.query.token, process.env.JWT_SECRET, function (err, decoded) {
-      if (err) return next(new Error("Authentication error"));
-      socket.decoded = decoded;
-      next();
-    });
+  catch (error) {
+    console.error(error);
+    process.exit(1);
   }
-  else {
-    next(new Error("Authentication error"));
-  }
-})
-  .on("connection", (socket) => {
-    console.log(`${new Date()} - New connection ${socket.id}`);
+};
 
-    // Listening for chat event
-    socket.on("chat", function (data) {
-      io.sockets.emit("chat", data);
-    });
-
-    // Listening for typing event
-    socket.on("typing", function (data) {
-      io.sockets.emit("typing", data);
-      socket.broadcast.emit("typing", data);
-    });
-  });
-
-httpServer.listen(3000);
+start();
