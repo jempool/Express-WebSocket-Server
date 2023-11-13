@@ -1,6 +1,9 @@
 import passport from "passport";
 import * as passportLocal from "passport-local";
 const LocalStrategy = passportLocal.Strategy;
+import * as passportJwt from "passport-jwt";
+const JwtStrategy = passportJwt.Strategy;
+const ExtractJwt = passportJwt.ExtractJwt;
 import bcrypt from "bcrypt";
 const saltRounds = 10;
 import * as dotenv from "dotenv";
@@ -52,3 +55,17 @@ passport.use("local-signup", new LocalStrategy({
       });
   }
 ));
+
+passport.use(new JwtStrategy({
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: process.env.JWT_SECRET
+}, function (jwt_payload, done) {
+  getUserByEmail(jwt_payload.user.email)
+    .then((user) => {
+      return done(null, user.toResponseObject(), "User created Successfully");
+    })
+    .catch((err) => {
+      console.error(err);
+      done(err);
+    });
+}));

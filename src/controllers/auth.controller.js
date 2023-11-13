@@ -44,11 +44,10 @@ export function signup(req, res) {
   )(req, res);
 }
 
-export function verifyRefresh(req, res) {
+export function refreshToken(req, res) {
   try {
     const { email, refreshToken } = req.body;
     const token = jwt.verify(refreshToken, process.env.JWT_SECRET);
-    // --
     const isValid = token.user.email === email;
     if (!isValid) {
       return res.status(401).json({ success: false, error: "Invalid token, try login again" });
@@ -56,11 +55,8 @@ export function verifyRefresh(req, res) {
     const user = { name: token.user.name, email: token.user.email };
     const accessToken = jwt.sign({ user }, process.env.JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRES_IN });
     return res.status(200).json({ user, accessToken });
-    // --
-
   }
   catch (error) {
     return false;
   }
 }
-
