@@ -1,13 +1,13 @@
 import { Server } from "socket.io";
 
-import * as dbService from "../services/db.service.js";
+import * as dbService from "../services/db.service.ts";
 
 export function socketIO(httpServer) {
   const io = new Server(httpServer, {
     cors: {
       origin: "*",
-      methods: ["GET", "POST"]
-    }
+      methods: ["GET", "POST"],
+    },
   });
 
   io.on("connection", (socket) => {

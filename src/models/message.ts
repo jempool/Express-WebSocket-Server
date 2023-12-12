@@ -3,18 +3,18 @@ import mongoose from "mongoose";
 const MessageSchema = new mongoose.Schema({
   message: {
     type: String,
-    required: true
+    required: true,
   },
   handle: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
 MessageSchema.method("toResponseObject", function () {
   return {
     name: this.message,
-    email: this.handle
+    email: this.handle,
   };
 });
 
