@@ -7,12 +7,11 @@ import mongoose from "mongoose";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import * as WebSockets from "./src/webSockets/webSockets.js";
-import { PORT, DATABASE_URL, DATABASE_NAME } from "./src/utils/constants.js";
-import "./src/services/auth.service.js";
-import authRouter from "./src/routes/auth.route.js";
-import chatRouter from "./src/routes/chat.route.js";
-
+import * as WebSockets from "./webSockets/webSockets.ts";
+import { PORT, DATABASE_URL, DATABASE_NAME } from "./utils/constants.ts";
+import "./services/auth.service.js";
+import authRouter from "./routes/auth.route.ts";
+import chatRouter from "./routes/chat.route.ts";
 
 // =================================================================================
 // API  ============================================================================
@@ -24,7 +23,6 @@ app.use(bodyParser.json());
 
 app.use("/auth", authRouter);
 app.use("/chat", passport.authenticate("jwt", { session: false }), chatRouter);
-
 
 // =================================================================================
 // Server  =========================================================================
@@ -38,9 +36,10 @@ WebSockets.socketIO(httpServer);
 const start = async () => {
   try {
     await mongoose.connect(`${DATABASE_URL}/${DATABASE_NAME}`);
-    httpServer.listen(PORT, () => console.log(`Server started on port ${PORT}`));
-  }
-  catch (error) {
+    httpServer.listen(PORT, () =>
+      console.log(`Server started on port ${PORT}`)
+    );
+  } catch (error) {
     console.error(error);
     process.exit(1);
   }

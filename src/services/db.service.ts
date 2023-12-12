@@ -1,5 +1,5 @@
-import { User } from "../models/user.js";
-import { Message } from "../models/message.js";
+import { User } from "../models/user.ts";
+import { Message } from "../models/message.ts";
 
 // === Users ====
 
@@ -11,7 +11,6 @@ export async function createUser(user) {
   const newUser = new User({ ...user });
   return await newUser.save();
 }
-
 
 // === Chat ===
 

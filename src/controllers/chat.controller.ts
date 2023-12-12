@@ -1,8 +1,8 @@
 import * as chatService from "../services/chat.service.js";
 
-
 export async function history(req, res) {
-  return chatService.rename()
+  return chatService
+    .rename()
     .then((message) => {
       return res.status(200).json(message);
     })
