@@ -1,4 +1,4 @@
-const DATABASE_URL = "mongodb://localhost:27017";
+const DATABASE_URL = "mongodb://0.0.0.0:27017";
 const DATABASE_NAME = "real-time_chat";
 
 const ACCESS_TOKEN_EXPIRES_IN = "1h";

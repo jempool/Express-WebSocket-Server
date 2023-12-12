@@ -22,7 +22,7 @@ passport.use(new LocalStrategy({
         if (!user || !bcrypt.compareSync(password, user.password)) {
           return done(null, false, "Incorrect email or password.");
         }
-        return done(null, user.toResponseObject(), "User created Successfully");
+        return done(null, user.toResponseObject(), "User logged Successfully");
       })
       .catch((err) => {
         console.error(err);
