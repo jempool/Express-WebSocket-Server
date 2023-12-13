@@ -12,6 +12,7 @@ import { PORT, DATABASE_URL, DATABASE_NAME } from "./utils/constants.ts";
 import "./services/auth.service.js";
 import authRouter from "./routes/auth.route.ts";
 import chatRouter from "./routes/chat.route.ts";
+import topicRouter from "./routes/topic.route.ts";
 
 // =================================================================================
 // API  ============================================================================
@@ -23,6 +24,11 @@ app.use(bodyParser.json());
 
 app.use("/auth", authRouter);
 app.use("/chat", passport.authenticate("jwt", { session: false }), chatRouter);
+app.use(
+  "/topics",
+  passport.authenticate("jwt", { session: false }),
+  topicRouter
+);
 
 // =================================================================================
 // Server  =========================================================================
