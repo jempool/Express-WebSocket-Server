@@ -1,9 +1,9 @@
-const http = require("http");
-const { io: Client } = require("socket.io-client");
-const { socketIO } = require("../src/webSockets/webSockets.ts");
-const dbService = require("../src/services/db.service.ts");
+import http from "http";
+import { io as Client } from "socket.io-client";
+import { socketIO } from "../../src/webSockets/webSockets.ts";
 
-jest.mock("../src/services/db.service.ts");
+jest.mock("../../src/services/db.service.ts");
+import * as dbService from "../../src/services/db.service.ts";
 
 describe("socketIO", () => {
   let httpServer;
@@ -11,7 +11,7 @@ describe("socketIO", () => {
   const incomingMessage = { message: "Hello, World!", handle: "John Doe" };
 
   beforeAll((done) => {
-    dbService.addMessage = jest.fn((data) => {
+    jest.spyOn(dbService, "addMessage").mockImplementation((data) => {
       return Promise.resolve(data);
     });
 
