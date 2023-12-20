@@ -1,4 +1,5 @@
 import { Topic } from "../models/topic.model.ts";
+import * as dbService from "./db.service.ts";
 
 export default {
   getAllTopics: async function () {
@@ -10,8 +11,6 @@ export default {
     const today = new Date(
       Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
     );
-    return await Topic.findOne({ forDate: { $gte: today } }).select(
-      "-_id -__v -forDate"
-    );
+    return await dbService.getTopicByDate(today);
   },
 };

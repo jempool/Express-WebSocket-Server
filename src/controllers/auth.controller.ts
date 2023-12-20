@@ -7,7 +7,6 @@ import {
   ACCESS_TOKEN_EXPIRES_IN,
   REFRESH_TOKEN_EXPIRES_IN,
 } from "../utils/constants.ts";
-import { User } from "../interfaces/user.interface.ts";
 
 export function login(req, res) {
   passport.authenticate("local", { session: false }, (err, user, info) => {
