@@ -51,7 +51,9 @@ function setupPassportStubs() {
         };
         const info = null;
         const err = null;
-        callback(err, user, info)(req, res);
+        if (callback) {
+          callback(err, user, info || {})(req, res);
+        }
       };
     });
 }
