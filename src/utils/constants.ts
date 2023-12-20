@@ -3,6 +3,7 @@ const DATABASE_NAME = "real-time_chat";
 
 const ACCESS_TOKEN_EXPIRES_IN = "1h";
 const REFRESH_TOKEN_EXPIRES_IN = "1d";
+const BCRYPT_SALT_ROUNDS = 10;
 
 const PORT = 3000;
 
@@ -11,5 +12,6 @@ export {
   DATABASE_NAME,
   ACCESS_TOKEN_EXPIRES_IN,
   REFRESH_TOKEN_EXPIRES_IN,
+  BCRYPT_SALT_ROUNDS,
   PORT,
 };

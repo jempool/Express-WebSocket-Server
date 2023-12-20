@@ -9,7 +9,7 @@ dotenv.config();
 
 import * as WebSockets from "./webSockets/webSockets.ts";
 import { PORT, DATABASE_URL, DATABASE_NAME } from "./utils/constants.ts";
-import "./services/auth.service.js";
+import { initializeAuthStrategies } from "./services/auth.service.ts";
 import authRouter from "./routes/auth.route.ts";
 import chatRouter from "./routes/chat.route.ts";
 import topicRouter from "./routes/topic.route.ts";
@@ -21,6 +21,8 @@ import topicRouter from "./routes/topic.route.ts";
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+
+initializeAuthStrategies();
 
 app.use("/auth", authRouter);
 app.use("/chat", passport.authenticate("jwt", { session: false }), chatRouter);
@@ -45,6 +47,18 @@ const start = async () => {
     httpServer.listen(PORT, () =>
       console.log(`Server started on port ${PORT}`)
     );
+
+    // Add an event handler for the 'exit' event
+    process.on("exit", () => {
+      // Close the HTTP server
+      httpServer.close(() => {
+        console.log("HTTP server closed.");
+      });
+
+      // Close the MongoDB connection
+      mongoose.connection.close();
+      console.log("MongoDB connection closed.");
+    });
   } catch (error) {
     console.error(error);
     process.exit(1);

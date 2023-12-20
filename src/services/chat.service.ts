@@ -1,7 +1,8 @@
-import { getAllHistory } from "./db.service.ts";
+import * as dbService from "./db.service.ts";
 
-export async function rename() {
-  return getAllHistory()
+export async function getAllHistory() {
+  return dbService
+    .getAllHistory()
     .then((message) => {
       return message;
     })
